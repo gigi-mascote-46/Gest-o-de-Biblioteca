@@ -1,0 +1,26 @@
+🧩 Enum: Role
+Localização provável: dominio/enums/Role.cs
+
+📌 Propósito:
+
+O enum Role define os papéis dos utilizadores dentro do sistema da biblioteca. Ele serve para distinguir níveis de permissão e acesso, garantindo que determinadas funcionalidades sejam acessíveis apenas por certos tipos de utilizadores.
+
+✅ Valores Prováveis (dedução comum em sistemas deste tipo):
+Embora o conteúdo exato não tenha sido exibido, normalmente um enum chamado Role pode incluir valores como:
+
+csharp
+Copiar código
+public enum Role
+{
+    Administrador,
+    Bibliotecario,
+    Leitor
+}
+
+
+🔐 Usos Comuns no Código:
+Verificar se um utilizador tem permissão para aceder a certas funcionalidades (ex: excluir livros, gerir empréstimos)
+
+Definir menus ou opções específicas por tipo de utilizador
+
+Controlar ações críticas (ex: apenas Administrador pode apagar registos)

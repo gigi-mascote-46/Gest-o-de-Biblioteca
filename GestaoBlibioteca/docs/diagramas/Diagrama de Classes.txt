@@ -1,0 +1,444 @@
+# Diagrama de Classes
+
+# Usa a linguagem D2 como definido em <https://d2lang.com>.
+# Projeto GitHub em <https://github.com/terrastruct/d2>.
+# A documentação sobre diagramas de classe em D2 está em <https://d2lang.com/tour/uml-classes>.
+
+# Direction está comentado para que o renderer possa decidir o layout.
+# direction: right
+
+# Interface de usuário
+
+# Login e Sessão
+
+LoginUI: {
+  shape: class
+
+  -appServiceUsuarios: AppServiceUsuarios
+  -sessao: Sessao
+
+  +Login()
+}
+
+Sessao: {
+  shape: class
+
+  +UsuarioAtual: Usuario?
+
+  +Login(usuario Usuario)
+  +Logout()
+  +EhBibliotecario(): bool
+  +EhLeitor(): bool
+}
+
+
+# Telas (menus e submenus)
+
+UIController: {
+  shape: class
+
+  -loginUI: LoginUI
+  -menuPrincipalUI: MenuPrincipalUI
+
+  +Iniciar()
+}
+
+MenuPrincipalUI: {
+  shape: class
+
+  -livroUI: LivroUI
+  -usuarioUI: UsuarioUI
+  -exemplarUI: ExemplarUI
+  -emprestimoUI: EmprestimoUI
+
+  +ExibirMenu(role Role)
+}
+
+LivroUI: {
+  shape: class
+
+  -appServiceLivros: AppServiceLivros
+
+  +ExibirMenu(role Role)
+  -CadastrarLivro()
+  -ListarLivros()
+  -BuscarPorTitulo()
+  -BuscarPorAutor()
+  -BuscarPorISBN()
+  -ExibirLivro(livro Livro)
+}
+
+UsuarioUI: {
+  shape: class
+
+  -appServiceUsuarios: AppServiceUsuarios
+
+  +ExibirMenu(role Role)
+  -CadastrarUsuario()
+  -ListarUsuarios()
+  # -AlterarRole() # Funcionalidade desabilitada por enquanto.
+  -ExibirUsuario()
+}
+
+ExemplarUI: {
+  shape: class
+
+  -appServiceExemplares: AppServiceExemplares
+
+  +ExibirMenu(role Role)
+  -CadastrarExemplar()
+  -AtualizarModoDeLeitura()
+}
+
+EmprestimoUI: {
+  shape: class
+
+  -appServiceEmprestimos: AppServiceEmprestimos
+
+  +ExibirMenu(role Role)
+  -RealizarEmprestimo()
+  -RegistrarDevolucao()
+  -ListarEmprestimosPorUsuario()
+  -ExibirEmprestimo(emprestimo Emprestimo)
+}
+
+
+# Repositórios (interfaces)
+
+IRepositorioLivros: {
+  shape: class
+
+  +ObterPorId(id int): Livro?
+  +ObterPorISBN(isbn string): Livro?
+  +BuscarPorTitulo(titulo string, limite int): List<Livro>
+  +BuscarPorAutor(autor string, limite int): List<Livro>
+  +Adicionar(livro Livro)
+  +ListarTodos(limite int): List<Livro>
+}
+
+IRepositorioExemplares: {
+  shape: class
+
+  +ObterPorId(id int): Exemplar?
+  +ObterDisponivelParaLivro(livroId int): Exemplar?
+  +Adicionar(exemplar Exemplar)
+  +AtualizarModoDeLeitura(exemplarId int, leituraLocal bool)
+}
+
+IRepositorioUsuarios: {
+  shape: class
+
+  +ObterPorId(id int): Usuario?
+  +ObterPorNomeUsuario(nome string): Usuario?
+  +Adicionar(usuario Usuario)
+  +AtualizarContato(usuarioId int, novoTelefone string, novoEmail string)
+  +ListarTodos(limite int): List<Usuario>
+}
+
+IRepositorioEmprestimos: {
+  shape: class
+
+  +ObterPorId(id int): Emprestimo?
+  +ListarPorUsuario(usuarioId int, limite int): List<Emprestimo>
+  +Adicionar(emprestimo Emprestimo)
+  +RegistrarDevolucao(emprestimoId int, dataDevolucao DateTime)
+}
+
+# Implementações concretas dos repositórios
+
+RepositorioLivrosSQLite: {
+  shape: class
+}
+
+RepositorioExemplaresSQLite: {
+  shape: class
+}
+
+RepositorioUsuariosSQLite: {
+  shape: class
+}
+
+RepositorioEmprestimosSQLite: {
+  shape: class
+}
+
+# Serviços de domínio
+
+CadastroDeLivros: {
+  shape: class
+
+  +Criar(titulo string, autor string, isbn string, anoPublicacao int): Livro
+}
+
+CadastroDeExemplares: {
+  shape: class
+
+  +Criar(livro Livro, somenteLeituraLocal bool): Exemplar
+  +AtualizarModoDeLeitura(exemplar Exemplar, somenteLeituraLocal bool): Exemplar
+}
+
+CadastroDeUsuarios: {
+  shape: class
+
+  +Criar(nomeUsuario string, nome string, telefone string, email string, role Role): Usuario
+  +AtualizarContato(usuario Usuario, novoTelefone string, novoEmail string): Usuario
+}
+
+GestorDeEmprestimos: {
+  shape: class
+
+  +Criar(exemplar Exemplar, usuario Usuario, dataEmprestimo DateTime): Emprestimo
+  +MarcarComoDevolvido(emprestimo Emprestimo, dataDevolucao DateTime): Emprestimo
+}
+
+# Serviços de Aplicação (orquestração)
+
+AppServiceLivros: {
+  shape: class
+
+  -repositorioLivros: IRepositorioLivros
+  -unidadeDeTrabalho: IUnidadeDeTrabalho
+  -cadastroDeLivros: CadastroDeLivros
+
+  +BuscarPorISBN(isbn string): Livro?
+  +BuscarPorTitulo(titulo string): List<Livro>
+  +BuscarPorAutor(autor string): List<Livro>
+  +Cadastrar(titulo string, autor string, isbn string, anoPublicacao int): Livro
+  +ListarTodos(limite int): List<Livro>
+}
+
+AppServiceExemplares: {
+  shape: class
+
+  -repositorioLivros: IRepositorioLivros
+  -repositorioExemplares: IRepositorioExemplares
+  -unidadeDeTrabalho: IUnidadeDeTrabalho
+  -cadastroDeExemplares: CadastroDeExemplares
+
+  +Cadastrar(livroId int, somenteLeituraLocal bool): Exemplar
+  +AtualizarModoDeLeitura(exemplarId int, leituraLocal bool): Exemplar
+}
+
+AppServiceUsuarios: {
+  shape: class
+
+  -repositorioUsuarios: IRepositorioUsuarios
+  -unidadeDeTrabalho: IUnidadeDeTrabalho
+  -cadastroDeUsuarios: CadastroDeUsuarios
+
+  +ObterPorNomeUsuario(nome string): Usuario?
+  +Cadastrar(nomeUsuario string, nome string, telefone string, email string, role Role): Usuario
+  +AtualizarContato(usuario Usuario, novoTelefone string, novoEmail string): Usuario
+  +ListarTodos(): List<Usuario>
+}
+
+AppServiceEmprestimos: {
+  shape: class
+
+  -repositorioLivros: IRepositorioLivros
+  -repositorioUsuarios: IRepositorioUsuarios
+  -repositorioExemplares: IRepositorioExemplares
+  -repositorioEmprestimos: IRepositorioEmprestimos
+  -unidadeDeTrabalho: IUnidadeDeTrabalho
+  -gestorDeEmprestimos: GestorDeEmprestimos
+
+  +ListarPorUsuario(usuarioId int): List<Emprestimo>
+  +RealizarEmprestimo(livroId int, usuarioId int): Emprestimo
+  +RegistrarDevolucao(emprestimoId int, dataDevolucao DateTime): Emprestimo
+}
+
+# Domain Models
+
+Domain Models: {
+  style: {
+    stroke: transparent
+    fill: transparent
+  }
+
+  Livro: {
+    shape: class
+
+    +Id: int
+    +Titulo: string
+    +Autor: string
+    +ISBN: string
+    +AnoPublicacao: int
+  }
+
+  Exemplar: {
+    shape: class
+
+    +Id: int
+    +Livro: Livro
+    +SomenteLeituraLocal: bool
+  }
+
+  Usuario: {
+    shape: class
+
+    +Id: int
+    +NomeUsuario: string
+    +Nome: string
+    +Telefone: string
+    +Email: string
+    +Role: Role
+  }
+
+  Emprestimo: {
+    shape: class
+
+    +Id: int
+    +Usuario: Usuario
+    +Exemplar: Exemplar
+    +DataEmprestimo: DateTime
+    +DataLimiteDevolucao: DateTime
+    +DataDevolucao: DateTime? # Nulo enquanto o livro não é devolvido
+  }
+
+  # Role tem "shape: class" porque um enum não pode ser representado em um script D2.
+  Role: {
+    shape: class
+
+    +Bibliotecario
+    +Leitor
+  }
+
+  # Relações entre os domain models e Role
+
+  Emprestimo -> Usuario
+  Emprestimo -> Exemplar
+  Exemplar -> Livro
+  Usuario -> Role
+}
+
+
+# Unidade de Trabalho
+
+IUnidadeDeTrabalho: {
+  shape: class
+
+  +Iniciar()
+  +Commitar()
+  +Rollback()
+}
+
+UnidadeDeTrabalhoSQLite: {
+  shape: class
+}
+
+
+# Relações entre classes
+
+
+# Relações dos application services
+
+AppServiceLivros -> IRepositorioLivros
+AppServiceLivros -> CadastroDeLivros
+AppServiceLivros -> IUnidadeDeTrabalho
+
+AppServiceExemplares -> IRepositorioExemplares
+AppServiceExemplares -> IRepositorioLivros
+AppServiceExemplares -> CadastroDeExemplares
+AppServiceExemplares -> IUnidadeDeTrabalho
+
+AppServiceUsuarios -> IRepositorioUsuarios
+AppServiceUsuarios -> CadastroDeUsuarios
+AppServiceUsuarios -> IUnidadeDeTrabalho
+
+AppServiceEmprestimos -> IRepositorioLivros
+AppServiceEmprestimos -> IRepositorioExemplares
+AppServiceEmprestimos -> IRepositorioUsuarios
+AppServiceEmprestimos -> IRepositorioEmprestimos
+AppServiceEmprestimos -> IUnidadeDeTrabalho
+AppServiceEmprestimos -> GestorDeEmprestimos
+
+
+# Relações das implementações concretas dos repositórios
+
+RepositorioLivrosSQLite -> IRepositorioLivros
+RepositorioExemplaresSQLite -> IRepositorioExemplares
+RepositorioUsuariosSQLite -> IRepositorioUsuarios
+RepositorioEmprestimosSQLite -> IRepositorioEmprestimos
+
+
+# Relações das implementações concretas da unidade de trabalho
+
+UnidadeDeTrabalhoSQLite -> IUnidadeDeTrabalho
+
+
+# Relações na camada de UI
+
+UIController -> LoginUI
+UIController -> MenuPrincipalUI
+
+LoginUI -> Sessao
+LoginUI -> AppServiceUsuarios
+
+MenuPrincipalUI -> LivroUI
+MenuPrincipalUI -> UsuarioUI
+MenuPrincipalUI -> ExemplarUI
+MenuPrincipalUI -> EmprestimoUI
+
+LivroUI -> AppServiceLivros
+UsuarioUI -> AppServiceUsuarios
+ExemplarUI -> AppServiceExemplares
+EmprestimoUI -> AppServiceEmprestimos
+
+
+# Exceções de domínio
+
+Exceções de domínio: {
+  style: {
+    stroke: transparent
+    fill: transparent
+  }
+
+  LivroNaoEncontradoException: {
+    shape: class
+  }
+
+  UsuarioNaoEncontradoException: {
+    shape: class
+  }
+
+  ExemplarIndisponivelException: {
+    shape: class
+  }
+
+  UsuarioAtingiuLimiteEmprestimosException: {
+    shape: class
+  }
+
+  EmprestimoNaoEncontradoException: {
+    shape: class
+  }
+
+  ExemplarSomenteLeituraLocalException: {
+    shape: class
+  }
+
+  EmprestimoJaDevolvidoException: {
+    shape: class
+  }
+}
+
+
+# Relações com serviços de aplicação e domínio que podem lançar essas exceções
+# Esta parte está comentada para não poluir demais o diagrama renderizado (imagem),
+# mas fica presente como texto no script para documentar os relationamentos para essas exceções.
+#
+# AppServiceEmprestimos -> LivroNaoEncontradoException
+# AppServiceEmprestimos -> UsuarioNaoEncontradoException
+# AppServiceEmprestimos -> ExemplarIndisponivelException
+# AppServiceEmprestimos -> UsuarioAtingiuLimiteEmprestimosException
+# AppServiceEmprestimos -> EmprestimoNaoEncontradoException
+# AppServiceEmprestimos -> ExemplarSomenteLeituraLocalException
+# AppServiceEmprestimos -> EmprestimoJaDevolvidoException
+
+# Relações entre serviço de domínio e exceções
+# Esta parte está comentada para não poluir demais o diagrama renderizado (imagem),
+# mas fica presente como texto no script para documentar os relationamentos para essas exceções.
+#
+# GestorDeEmprestimos -> UsuarioAtingiuLimiteEmprestimosException
+# GestorDeEmprestimos -> ExemplarSomenteLeituraLocalException
+# GestorDeEmprestimos -> EmprestimoJaDevolvidoException

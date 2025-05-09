@@ -1,0 +1,61 @@
+# Diagrama de Tabelas do Banco de Dados (usando SQLite) - Diagrama entidade-relacionamento
+# Armazenamento de datas/hora em TEXT (formato ISO 8601, fuso UTC)
+
+# Usa a linguagem D2 como definido em <https://d2lang.com>.
+# Projeto GitHub em <https://github.com/terrastruct/d2>.
+# A documentação sobre diagramas de tabelas de banco de dados relacionais em D2 está em <https://d2lang.com/tour/sql-tables/>.
+
+# Tabela de Livros
+livros: {
+  shape: sql_table
+
+  id: INTEGER NOT NULL {constraint: primary_key} # autoincrement
+  titulo: TEXT NOT NULL
+  autor: TEXT NOT NULL
+  isbn: TEXT NOT NULL {constraint: unique}
+  ano_publicacao: INTEGER NOT NULL
+}
+
+# Tabela de Exemplares
+exemplares: {
+  shape: sql_table
+
+  id: INTEGER NOT NULL {constraint: primary_key} # autoincrement
+  livro_id: INTEGER NOT NULL {constraint: foreign_key}
+  somente_leitura_local: INTEGER NOT NULL # Booleano (0=false, 1=true)
+}
+
+# Tabela de Usuários
+usuarios: {
+  shape: sql_table
+
+  id: INTEGER NOT NULL {constraint: primary_key} # autoincrement
+  nome_usuario: TEXT NOT NULL {constraint: unique}
+  nome: TEXT NOT NULL
+  telefone: TEXT NOT NULL
+  email: TEXT NOT NULL
+  role: TEXT NOT NULL # Armazenado como string (ex: "Bibliotecario", "Leitor")
+}
+
+# Tabela de Empréstimos
+emprestimos: {
+  shape: sql_table
+
+  id: INTEGER NOT NULL {constraint: primary_key} # autoincrement
+  usuario_id: INTEGER NOT NULL {constraint: foreign_key}
+  exemplar_id: INTEGER NOT NULL {constraint: foreign_key}
+  data_emprestimo: TEXT NOT NULL # ISO 8601 UTC
+  data_limite_devolucao: TEXT NOT NULL # ISO 8601 UTC
+  data_devolucao: TEXT # ISO 8601 UTC. Nulo enquanto não devolvido
+}
+
+# Relacionamentos (chaves estrangeiras)
+exemplares.livro_id -> livros.id
+emprestimos.usuario_id -> usuarios.id
+emprestimos.exemplar_id -> exemplares.id
+
+# Índices
+# No futuro poderão ser criados índices para:
+# As FKs.
+# exemplares.somente_leitura_local, se necessário.
+# Podemos avaliar também a necessidade de criar índices full-text search para livros.autor e livros.titulo.

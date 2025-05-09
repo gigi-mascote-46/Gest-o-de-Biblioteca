@@ -1,0 +1,22 @@
+Organização do código
+
+/ProjetoBiblioteca
+│
+├── /UI
+│   └── Program.cs               ← Ponto de entrada (startup)
+│
+├── /Infra
+│   ├── DbInitializer.cs         ← Criação das tabelas (migrações manuais)
+│   ├── ConexaoPadrao.cs        ← Singleton ou factory da conexão SQLite
+│   └── Repositorios/
+│
+├── /Application
+├── /Domain
+│   ├── Usuario.cs
+│   ├── Livro.cs
+│   ├── Exemplar.cs
+│   └── Emprestimo.cs
+│
+├── biblioteca.db               ← Arquivo SQLite (gerado em tempo de execução)
+├── README.md
+└── ARQUITETURA.md

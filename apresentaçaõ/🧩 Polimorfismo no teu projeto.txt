@@ -1,0 +1,30 @@
+🧩 Polimorfismo no teu projeto
+1. Via Interfaces (Polimorfismo por contrato)
+Exemplo: IRepositorioUsuarios, IRepositorioLivros, etc.
+Cada uma destas interfaces define o mesmo conjunto de métodos (ex: Adicionar(), ObterPorId()), mas as classes que as implementam (como RepositorioUsuariosSQLite) fornecem diferentes implementações concretas.
+
+csharp
+Copiar
+Editar
+IRepositorioUsuarios repo = new RepositorioUsuariosSQLite();
+Usuario u = repo.ObterPorId(id);
+➡️ Aqui, o código não se importa com o tipo específico do repositório — só que cumpre o contrato da interface.
+
+2. Via Exceções Personalizadas (Polimorfismo por herança)
+Todas as exceções do domínio herdam de Exception:
+
+csharp
+Copiar
+Editar
+catch (Exception ex)
+{
+    // Pode ser qualquer exceção: EmprestimoNaoEncontradoException, UsuarioNaoEncontradoException, etc.
+}
+➡️ Isto é polimorfismo: diferentes exceções tratadas de forma genérica, mas cada uma com comportamento ou mensagem própria.
+
+3. Benefícios no projeto
+🔄 Substituição flexível de implementações (por exemplo, mudar repositório sem alterar a aplicação)
+
+🧪 Facilidade de testes com mocks ou stubs
+
+📦 Código mais limpo e extensível

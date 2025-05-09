@@ -1,0 +1,96 @@
+Estrutura do Projeto
+
+✅ Classes (36 total)
+Divididas por camadas lógicas:
+
+🔧 Serviços da Aplicação
+AppServiceEmprestimos
+
+AppServiceExemplares
+
+AppServiceLivros
+
+AppServiceUsuarios
+
+🧠 Serviços de Domínio
+CadastroDeExemplares
+
+CadastroDeLivros
+
+CadastroDeUsuarios
+
+GestorDeEmprestimos
+
+💾 Infraestrutura (SQLite + Dapper)
+FabricaDeConexaoSQLite
+
+UnidadeDeTrabalhoSQLite
+
+RepositorioEmprestimosSQLite
+
+RepositorioExemplaresSQLite
+
+RepositorioLivrosSQLite
+
+RepositorioUsuariosSQLite
+
+BooleanTypeHandler
+
+DateTimeUtcTypeHandler
+
+RoleTypeHandler
+
+🖥️ Interface de Utilizador (UI/Console)
+MenuPrincipalUI
+
+Sessao
+
+UIController
+
+Menu, MenuItem
+
+EmprestimoUI, ExemplarUI, LivroUI, LoginUI, UsuarioUI
+
+🧩 Enums
+Role → Provavelmente define os tipos de utilizadores (Ex: Administrador, Leitor, etc.)
+
+🔌 Interfaces
+IUnidadeDeTrabalho → padrão Unit of Work
+
+IRepositorioEmprestimos
+
+IRepositorioExemplares
+
+IRepositorioLivros
+
+IRepositorioUsuarios
+
+Estas interfaces garantem abstração da persistência e permitem testes mais fáceis.
+
+⚠️ Exceções Customizadas
+Estas classes herdam de Exception, usadas para controlar regras de negócio específicas:
+
+EmprestimoJaDevolvidoException
+
+EmprestimoNaoEncontradoException
+
+ExemplarIndisponivelException
+
+ExemplarSomenteLeituraLocalException
+
+LivroNaoEncontradoException
+
+UsuarioAtingiuLimiteEmprestimosException
+
+UsuarioNaoEncontradoException
+
+📐 Arquitetura Identificada
+O projeto segue um modelo inspirado em DDD (Domain-Driven Design), com separação por camadas:
+
+Domínio: regras de negócio e entidades
+
+Aplicação: coordenação de casos de uso
+
+Infraestrutura: implementação de persistência e conectividade
+
+UI (Consola): interface com o utilizador

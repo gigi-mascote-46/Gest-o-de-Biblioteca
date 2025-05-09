@@ -1,0 +1,261 @@
+# Diagramas de sequencia
+
+# Usa a linguagem D2 como definido em <https://d2lang.com>.
+# Projeto GitHub em <https://github.com/terrastruct/d2>.
+# A documentação sobre diagramas de sequência em D2 está em <https://d2lang.com/tour/sequence-diagrams/>.
+
+# Livro
+
+Cadastro de Livro: {
+  shape: sequence_diagram
+
+  LivroUI -> AppServiceLivros: Cadastrar(titulo, autor, isbn, anoPublicacao)
+  AppServiceLivros -> IUnidadeDeTrabalho: Iniciar()
+  AppServiceLivros -> CadastroDeLivros: Criar(titulo, autor, isbn, anoPublicacao)
+  CadastroDeLivros -> AppServiceLivros: Livro
+  AppServiceLivros -> IRepositorioLivros: Adicionar(livro)
+  AppServiceLivros -> IUnidadeDeTrabalho: Commitar()
+  AppServiceLivros -> LivroUI: Livro
+}
+
+Listagem de Todos os Livros: {
+  shape: sequence_diagram
+
+  LivroUI -> AppServiceLivros: ListarTodos()
+  AppServiceLivros -> IRepositorioLivros: ListarTodos(limite)
+  IRepositorioLivros -> AppServiceLivros: List<Livro>
+  AppServiceLivros -> LivroUI: List<Livro>
+}
+
+Buscar Livro por Título: {
+  shape: sequence_diagram
+
+  LivroUI -> AppServiceLivros: BuscarPorTitulo(titulo)
+  AppServiceLivros -> IRepositorioLivros: BuscarPorTitulo(titulo, limite)
+  IRepositorioLivros -> AppServiceLivros: List<Livro>
+  AppServiceLivros -> LivroUI: List<Livro>
+}
+
+Buscar Livro por Autor: {
+  shape: sequence_diagram
+
+  LivroUI -> AppServiceLivros: BuscarPorAutor(autor)
+  AppServiceLivros -> IRepositorioLivros: BuscarPorAutor(autor, limite)
+  IRepositorioLivros -> AppServiceLivros: List<Livro>
+  AppServiceLivros -> LivroUI: List<Livro>
+}
+
+Buscar Livro por ISBN: {
+  shape: sequence_diagram
+
+  LivroUI -> AppServiceLivros: BuscarPorISBN(isbn)
+  AppServiceLivros -> IRepositorioLivros: ObterPorISBN(isbn)
+  IRepositorioLivros -> AppServiceLivros: Livro?
+  AppServiceLivros -> LivroUI: Livro?
+}
+
+# Exemplar
+
+Cadastro de Exemplar: {
+  shape: sequence_diagram
+
+  ExemplarUI -> AppServiceExemplares: Cadastrar(livroId, somenteLeituraLocal)
+  AppServiceExemplares -> IUnidadeDeTrabalho: Iniciar()
+  AppServiceExemplares -> IRepositorioLivros: ObterPorId(livroId)
+  IRepositorioLivros -> AppServiceExemplares: Livro
+  AppServiceExemplares -> CadastroDeExemplares: Criar(livro, somenteLeituraLocal)
+  CadastroDeExemplares -> AppServiceExemplares: Exemplar
+  AppServiceExemplares -> IRepositorioExemplares: Adicionar(exemplar)
+  AppServiceExemplares -> IUnidadeDeTrabalho: Commitar()
+  AppServiceExemplares -> ExemplarUI: Exemplar
+}
+
+Atualização do Modo de Leitura do Exemplar: {
+  shape: sequence_diagram
+
+  ExemplarUI -> AppServiceExemplares: AtualizarModoDeLeitura(exemplarId, leituraLocal)
+  AppServiceExemplares -> IUnidadeDeTrabalho: Iniciar()
+  AppServiceExemplares -> IRepositorioExemplares: ObterPorId(exemplarId)
+  IRepositorioExemplares -> AppServiceExemplares: Exemplar
+  AppServiceExemplares -> CadastroDeExemplares: AtualizarModoDeLeitura(exemplar, leituraLocal)
+  CadastroDeExemplares -> AppServiceExemplares: Exemplar (atualizado)
+  AppServiceExemplares -> IRepositorioExemplares: AtualizarModoDeLeitura(exemplarId, leituraLocal)
+  AppServiceExemplares -> IUnidadeDeTrabalho: Commitar()
+  AppServiceExemplares -> ExemplarUI: Exemplar
+}
+
+# Usuário
+
+Cadastro de Usuário: {
+  shape: sequence_diagram
+
+  UsuarioUI -> AppServiceUsuarios: Cadastrar(nomeUsuario, nome, telefone, email, role)
+  AppServiceUsuarios -> IUnidadeDeTrabalho: Iniciar()
+  AppServiceUsuarios -> CadastroDeUsuarios: Criar(nomeUsuario, nome, telefone, email, role)
+  CadastroDeUsuarios -> AppServiceUsuarios: Usuario
+  AppServiceUsuarios -> IRepositorioUsuarios: Adicionar(usuario)
+  AppServiceUsuarios -> IUnidadeDeTrabalho: Commitar()
+  AppServiceUsuarios -> UsuarioUI: Usuario
+}
+
+Atualização de Contato do Usuário: {
+  shape: sequence_diagram
+
+  UsuarioUI -> AppServiceUsuarios: AtualizarContato(usuarioId, novoTelefone, novoEmail)
+  AppServiceUsuarios -> IUnidadeDeTrabalho: Iniciar()
+  AppServiceUsuarios -> IRepositorioUsuarios: ObterPorId(id int)
+  IRepositorioUsuarios -> AppServiceUsuarios: Usuario
+  AppServiceUsuarios -> CadastroDeUsuarios: AtualizarContato(usuario, novoTelefone, novoEmail)
+  CadastroDeUsuarios -> AppServiceUsuarios: Usuario
+  AppServiceUsuarios -> IRepositorioUsuarios: AtualizarContato(usuarioId, novoTelefone, novoEmail)
+  AppServiceUsuarios -> IUnidadeDeTrabalho: Commitar()
+  AppServiceUsuarios -> UsuarioUI: Usuario
+}
+
+Listagem de Todos os Usuários: {
+  shape: sequence_diagram
+
+  UsuarioUI -> AppServiceUsuarios: ListarTodos()
+  AppServiceUsuarios -> IRepositorioUsuarios: ListarTodos(limite)
+  IRepositorioUsuarios -> AppServiceUsuarios: List<Usuario>
+  AppServiceUsuarios -> UsuarioUI: List<Usuario>
+}
+
+Busca de Usuário por Nome de Usuário: {
+  shape: sequence_diagram
+
+  UsuarioUI -> AppServiceUsuarios: ObterPorNomeUsuario(nomeUsuario)
+  AppServiceUsuarios -> IRepositorioUsuarios: ObterPorNomeUsuario(nomeUsuario)
+  IRepositorioUsuarios -> AppServiceUsuarios: Usuario?
+  AppServiceUsuarios -> UsuarioUI: Usuario?
+}
+
+# Empréstimo
+
+Realização de Empréstimo: {
+  shape: sequence_diagram
+
+  EmprestimoUI -> AppServiceEmprestimos: RealizarEmprestimo(livroId, usuarioId)
+  AppServiceEmprestimos -> IUnidadeDeTrabalho: Iniciar()
+  AppServiceEmprestimos -> IRepositorioLivros: ObterPorId(livroId)
+  IRepositorioLivros -> AppServiceEmprestimos: Livro
+  AppServiceEmprestimos -> IRepositorioUsuarios: ObterPorId(usuarioId)
+  IRepositorioUsuarios -> AppServiceEmprestimos: Usuario
+  AppServiceEmprestimos -> IRepositorioExemplares: ObterDisponivelParaLivro(livroId)
+  IRepositorioExemplares -> AppServiceEmprestimos: Exemplar
+  AppServiceEmprestimos -> GestorDeEmprestimos: Criar(exemplar, usuario, dataEmprestimo)
+  GestorDeEmprestimos -> AppServiceEmprestimos: Emprestimo
+  AppServiceEmprestimos -> IRepositorioEmprestimos: Adicionar(emprestimo)
+  AppServiceEmprestimos -> IUnidadeDeTrabalho: Commitar()
+  AppServiceEmprestimos -> EmprestimoUI: Emprestimo
+}
+
+Registro de Devolução: {
+  shape: sequence_diagram
+
+  EmprestimoUI -> AppServiceEmprestimos: RegistrarDevolucao(emprestimoId, dataDevolucao)
+  AppServiceEmprestimos -> IUnidadeDeTrabalho: Iniciar()
+  AppServiceEmprestimos -> IRepositorioEmprestimos: ObterPorId(emprestimoId)
+  IRepositorioEmprestimos -> AppServiceEmprestimos: Emprestimo
+  AppServiceEmprestimos -> GestorDeEmprestimos: MarcarComoDevolvido(emprestimo, dataDevolucao)
+  GestorDeEmprestimos -> AppServiceEmprestimos: Emprestimo
+  AppServiceEmprestimos -> IRepositorioEmprestimos: RegistrarDevolucao(emprestimoId, dataDevolucao)
+  AppServiceEmprestimos -> IUnidadeDeTrabalho: Commitar()
+  AppServiceEmprestimos -> EmprestimoUI: Emprestimo
+}
+
+Listagem de Empréstimos por Usuário: {
+  shape: sequence_diagram
+
+  EmprestimoUI -> AppServiceEmprestimos: ListarPorUsuario(usuarioId)
+  AppServiceEmprestimos -> IRepositorioEmprestimos: ListarPorUsuario(usuarioId, limite)
+  IRepositorioEmprestimos -> AppServiceEmprestimos: List<Emprestimo>
+  AppServiceEmprestimos -> EmprestimoUI: List<Emprestimo>
+}
+
+# Login e logout
+
+Login do Usuário: {
+  shape: sequence_diagram
+
+  LoginUI -> AppServiceUsuarios: ObterPorNomeUsuario(nomeUsuario)
+  AppServiceUsuarios -> IRepositorioUsuarios: ObterPorNomeUsuario(nomeUsuario)
+  IRepositorioUsuarios -> AppServiceUsuarios: Usuario?
+  AppServiceUsuarios -> LoginUI: Usuario?
+  LoginUI -> Sessao: Login(usuario)
+  Sessao -> Sessao: UsuarioAtual = usuario
+}
+
+# TODO: Refazer o design do fluxo de logout e o implementar no código.
+Logout do Usuário: {
+  shape: sequence_diagram
+
+  UIController -> Sessao: Logout()
+}
+
+# Role do usuário
+
+Verificação de Permissão: {
+  shape: sequence_diagram
+
+  UIController -> Sessao: EhBibliotecario()
+  Sessao -> UIController: bool
+}
+
+# Início do programa
+
+Fluxo inicial da UI até os submenus das entidades: {
+  shape: sequence_diagram
+
+  Program -> UIController: Iniciar()
+
+  LoginUI
+  AppServiceUsuarios
+  IRepositorioUsuarios
+  Sessao
+
+  Processo de login: {
+    UIController -> LoginUI: Login()
+    LoginUI -> AppServiceUsuarios: ObterPorNomeUsuario(nomeUsuario)
+    AppServiceUsuarios -> IRepositorioUsuarios: ObterPorNomeUsuario(nomeUsuario)
+    IRepositorioUsuarios -> AppServiceUsuarios: Usuario?
+    AppServiceUsuarios -> LoginUI: Usuario?
+    LoginUI -> Sessao: Login(usuario)
+    Sessao -> Sessao: UsuarioAtual = usuario
+
+    LoginUI -> UIController: {
+      style.stroke-dash: 5
+    }
+  }
+
+  MenuPrincipalUI
+
+  LivroUI
+  UsuarioUI
+  ExemplarUI
+  EmprestimoUI
+
+  UIController -> MenuPrincipalUI: ExibirMenu(sessao.Role)
+
+  Seleção dos submenus das entidades: {
+    MenuPrincipalUI -> LivroUI.submenu: ExibirMenu(roleAtual)
+    LivroUI.submenu -> MenuPrincipalUI: {
+      style.stroke-dash: 5
+    }
+
+    MenuPrincipalUI -> UsuarioUI.submenu: ExibirMenu(roleAtual)
+    UsuarioUI.submenu -> MenuPrincipalUI: {
+      style.stroke-dash: 5
+    }
+
+    MenuPrincipalUI -> ExemplarUI.submenu: ExibirMenu(roleAtual)
+    ExemplarUI.submenu -> MenuPrincipalUI: {
+      style.stroke-dash: 5
+    }
+
+    MenuPrincipalUI -> EmprestimoUI.submenu: ExibirMenu(roleAtual)
+    EmprestimoUI.submenu -> MenuPrincipalUI: {
+      style.stroke-dash: 5
+    }
+  }
+}

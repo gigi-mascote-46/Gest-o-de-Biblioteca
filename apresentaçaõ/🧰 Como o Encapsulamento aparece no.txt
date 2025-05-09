@@ -1,0 +1,27 @@
+🧰 Como o Encapsulamento aparece no teu projeto
+
+1. Campos privados + métodos públicos
+Exemplo extraído do ficheiro AppServiceEmprestimos.cs:
+
+csharp
+Copiar código
+private readonly IRepositorioLivros _repositorioLivros;
+private impede que outras classes mexam diretamente nesse campo.
+
+O acesso é controlado via métodos (por exemplo, EmprestarLivro()), que garantem regras de negócio.
+
+🟢 Benefício: Protege os dados de serem modificados diretamente e de forma incorreta.
+
+
+2. Interfaces
+Interfaces como IRepositorioUsuarios ocultam a implementação real:
+
+csharp
+Copiar código
+public interface IRepositorioUsuarios
+{
+    Usuario ObterPorId(Guid id);
+}
+Tu podes usar RepositorioUsuariosSQLite, mas não precisas saber como ele acede à base de dados. Só te importa que ele obedece ao contrato da interface.
+
+🟢 Benefício: Promove desacoplamento e permite trocar implementações sem quebrar o sistema.
