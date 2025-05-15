@@ -142,6 +142,7 @@ Este projeto tem copyright das autoras, todos os direitos reservados.
 
 ## ✍️ Autoras
 
-- Fabi (contato)
-- Colega (contato)
-- Colega (contato)
+- Angela Peixoto
+- Amanda Brito
+- Angélica Olivares
+- Fabi Nascimento
